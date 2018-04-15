@@ -20,7 +20,8 @@ pelotaVel = 3,
 scorePlayer = 0,
 scoreCPU = 0,
 maxScore = 3, //score maximo
-difficulty = 0.15; //(0 - facil, 1 - dificil)
+difficulty = 0.15, //(0 - facil, 1 - dificil)
+brinco = 0;
 
 function init()
 {	
@@ -240,7 +241,7 @@ function run()
 	pelotaLogica();
 	movPaletas();
 
-	paletaPhysics();
+	fisicaPaleta();
 	
 	requestAnimationFrame(run);
 }
@@ -269,7 +270,6 @@ function pelotaLogica()
 			// reset pelota to center
 			resetBall(1);
 		}
-		
 	}
 	
 	// si la pelota toca los costados
@@ -277,175 +277,113 @@ function pelotaLogica()
 	{
 		pelotaDirY = -pelotaDirY;
 	}	
-
-	// // limit pelota's y-Vel to 2x the x-Vel
-	// // this is so the pelota doesn't Vel from left to right super fast
-	// // keeps game playable for humans
-	// if (pelotaDirY > pelotaVel * 2)
-	// {
-	// 	pelotaDirY = pelotaVel * 2;
-	// }
-	// else if (pelotaDirY < -pelotaVel * 2)
-	// {
-	// 	pelotaDirY = -pelotaVel * 2;
-	// }
 }
 
 function movPaletas()
 {
 	//oponente CPU------------------------
-	// Lerp towards the pelota on the y plano
+	//paleta copia direccion de pelota y la dificultad indica la rapidez/precision entre mayor el numero mas dificil
 	paleta2DirY = (pelota.position.y - paleta2.position.y) * difficulty;
+	paleta2.position.y += paleta2DirY;
+	//hacemos la nueva posicion unnuemor absoluto
 	
-	// in case the Lerp function produces a value above max paleta Vel, we clamp it
-	if (Math.abs(paleta2DirY) <= paletaVel)
-	{	
-		paleta2.position.y += paleta2DirY;
-	}
-	// if the lerp value is too high, we have to limit Vel to paletaVel
-	else
-	{
-		// if paleta is lerping in +ve direction
-		if (paleta2DirY > paletaVel)
-		{
-			paleta2.position.y += paletaVel;
-		}
-		// if paleta is lerping in -ve direction
-		else if (paleta2DirY < -paletaVel)
-		{
-			paleta2.position.y -= paletaVel;
-		}
-	}
-	// We lerp the scale back to 1
-	// this is done because we stretch the paleta at some points
-	// stretching is done when paleta touches side of mesa and when paleta hits pelota
-	// by doing this here, we ensure paleta always comes back to default size
-	paleta2.scale.y += (1 - paleta2.scale.y) * 0.2;
-
 	// Jugador ----------------------
-	// move left
-	if (Key.isDown(Key.A))		
+	// move izquierda
+	if (Key.isDown(Key.A) || Key.isDown(Key.L))		
 	{
-		// if paleta is not touching the side of mesa
-		// we move
-		if (paleta1.position.y < mesaHeight * 0.45)
+		if (paleta1.position.y < mesaHeight * 0.40)
 		{
 			paleta1DirY = paletaVel * 0.5;
 		}
-		// else we don't move and stretch the paleta
-		// to indicate we can't move
 		else
 		{
 			paleta1DirY = 0;
 		}
 	}
 	
-	// move right
-	else if (Key.isDown(Key.D))
+	// move derecha
+	else if (Key.isDown(Key.D) || Key.isDown(Key.R))
 	{
-		// if paleta is not touching the side of mesa
-		// we move
-		if (paleta1.position.y > -mesaHeight * 0.45)
+		if (paleta1.position.y > -mesaHeight * 0.40)
 		{
 			paleta1DirY = -paletaVel * 0.5;
 		}
-		// else we don't move and stretch the paleta
-		// to indicate we can't move
 		else
 		{
 			paleta1DirY = 0;
 		}
 	}
-	// else don't move paleta
 	else
 	{
-		// stop the paleta
 		paleta1DirY = 0;
 	}
-	
-	paleta1.scale.y += (1 - paleta1.scale.y) * 0.2;	
-	paleta1.scale.z += (1 - paleta1.scale.z) * 0.2;	
 	paleta1.position.y += paleta1DirY;
 }
 
-// Handles paleta collision logic
-function paletaPhysics()
+// logica de la colision de paleta
+function fisicaPaleta()
 {
-	// PLAYER paleta LOGIC
-	
-	// if pelota is aligned with paleta1 on x plano
-	// remember the position is the CENTER of the object
-	// we only check between the front and the middle of the paleta (one-way collision)
+	//Paleta jugador
+	//Revisamos que la pelota toque la paleta en posicion 'x' y 'y'
 	if (pelota.position.x <= paleta1.position.x + paletaWidth &&  pelota.position.x >= paleta1.position.x)
 	{
-		// and if pelota is aligned with paleta1 on y plano
 		if (pelota.position.y <= paleta1.position.y + paletaHeight/2 &&  pelota.position.y >= paleta1.position.y - paletaHeight/2)
 		{
-			// and if pelota is travelling towards player (-ve direction)
+			//revisamos que la pelota vaya en direccion del jugador
 			if (pelotaDirX < 0)
 			{
-				// stretch the paleta to indicate a hit
-				paleta1.scale.y = 15;
-				// switch direction of pelota travel to create bounce
+				//sonido de 'toque'
+				//Cambiamos la direccion de la pelota
 				pelotaDirX = -pelotaDirX;
-				// we impact pelota angle when hitting it
-				// this is not realistic physics, just spices up the gameplay
-				// allows you to 'slice' the pelota to beat the opponent
+				
+				//creamos un efecto slice, cambiando el angulo de direccion en y
 				pelotaDirY -= paleta1DirY * 0.7;
 			}
 		}
 	}
 	
-	// OPPONENT paleta LOGIC	
-	
-	// if pelota is aligned with paleta2 on x plano
-	// remember the position is the CENTER of the object
-	// we only check between the front and the middle of the paleta (one-way collision)
-	if (pelota.position.x <= paleta2.position.x + paletaWidth
-	&&  pelota.position.x >= paleta2.position.x)
+	// paleta CPU
+	//Revisamos que la pelota toque la paleta en posicion 'x' y 'y'
+	if (pelota.position.x <= paleta2.position.x + paletaWidth &&  pelota.position.x >= paleta2.position.x)
 	{
-		// and if pelota is aligned with paleta2 on y plano
-		if (pelota.position.y <= paleta2.position.y + paletaHeight/2
-		&&  pelota.position.y >= paleta2.position.y - paletaHeight/2)
+		if (pelota.position.y <= paleta2.position.y + paletaHeight/2 &&  pelota.position.y >= paleta2.position.y - paletaHeight/2)
 		{
-			// and if pelota is travelling towards opponent (+ve direction)
+			//revisamos que la pelota vaya en direccion del jugador
 			if (pelotaDirX > 0)
 			{
-				// stretch the paleta to indicate a hit
-				paleta2.scale.y = 15;	
-				// switch direction of pelota travel to create bounce
+				//agregar sonido
+				//Cambiamos la direccion de la pelota
 				pelotaDirX = -pelotaDirX;
-				// we impact pelota angle when hitting it
-				// this is not realistic physics, just spices up the gameplay
-				// allows you to 'slice' the pelota to beat the opponent
+
+				//creamos un efecto slice, cambiando el angulo de direccion en y
 				pelotaDirY -= paleta2DirY * 0.7;
 			}
 		}
 	}
 }
 
-function resetBall(loser)
+function resetBall(perdedor)
 {
-	// position the pelota in the center of the mesa
+	// Ponemos la pelota en el centro de la mesa
 	pelota.position.x = 0;
 	pelota.position.y = 0;
-	
-	// if player lost the last point, we send the pelota to opponent
-	if (loser == 1)
-	{
-		pelotaDirX = -1;
-	}
-	// else if opponent lost, we send pelota to player
-	else
-	{
-		pelotaDirX = 1;
-	}
-	
-	// set the pelota to move +ve in y plano (towards left from the camera)
-	pelotaDirY = 1;
-}
+	pelotaVel=0;
 
-var bounceTime = 0;
+	setTimeout(() => { 
+			// si el CPU anoto le enviamos la pelota a CPU y viceversa
+			if (perdedor == 1)
+			{
+				pelotaDirX = -1;
+			}
+			else
+			{
+				pelotaDirX = 1;
+			}
+			pelotaVel = 2.5;
+			pelotaDirY = 1;
+			
+	}, 700)	
+}
 
 function ganador()
 {
@@ -456,12 +394,12 @@ function ganador()
 		pelotaVel = 0;
 		if(scorePlayer>= maxScore){
 			document.getElementById("scores").innerHTML = "Player wins!";
-			paleta1.position.z = 14 + Math.sin(bounceTime * 0.1) * 10;
+			paleta1.position.z = 14 + Math.sin(brinco * 0.1) * 10;
 		}else{
 			document.getElementById("scores").innerHTML = "CPU wins!";
-			paleta2.position.z = 14 + Math.sin(bounceTime * 0.1) * 10;
+			paleta2.position.z = 14 + Math.sin(brinco * 0.1) * 10;
 		}
-		bounceTime++;
+		brinco++;
 	}
 }
 
@@ -476,6 +414,8 @@ var Key = {
   D: 68,
   S: 83,
   SPACE: 32,
+  L:37,
+  R:39,
   
   isDown: function(keyCode) {
     return this._pressed[keyCode];
