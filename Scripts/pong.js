@@ -16,11 +16,11 @@ paletaVel = 3,
 pelota,
 pelotaDirX = 1,
 pelotaDirY = 1,
-pelotaVel = 2,
-score1 = 0,
-score2 = 0,
-maxScore = 2, //score maximo
-difficulty = 0.1; //(0 - facil, 1 - dificil)
+pelotaVel = 3,
+scorePlayer = 0,
+scoreCPU = 0,
+maxScore = 3, //score maximo
+difficulty = 0.15; //(0 - facil, 1 - dificil)
 
 function init()
 {	
@@ -209,8 +209,8 @@ function createScene()
 	
 	renderer.shadowMapEnabled = true;	
 	
-	score1 = 0;
-	score2 = 0;
+	scorePlayer = 0;
+	scoreCPU = 0;
 
 	camera.position.x = paleta1.position.x - 100;
 	camera.position.y = paleta1.position.y;
@@ -236,11 +236,12 @@ function onWindowResize() {
 function run()
 {	
 	renderer.render(scene, camera);
+	ganador(); //revisa si hay algun ganador
 	pelotaLogica();
 	movPaletas();
 
 	paletaPhysics();
-	matchScoreCheck();	
+	
 	requestAnimationFrame(run);
 }
 
@@ -250,50 +251,44 @@ function pelotaLogica()
 	pelota.position.x += pelotaDirX * pelotaVel;
 	pelota.position.y += pelotaDirY * pelotaVel;
 
-	// if pelota goes off the 'left' side (Player's side)
-	if (pelota.position.x <= -mesaWidth/2)
+	// Vemos quien metio gol
+	if (pelota.position.x <= -mesaWidth/2 || pelota.position.x >= mesaWidth/2 )
 	{	
-		// CPU scores
-		score2++;
-		// update scoreboard HTML
-		document.getElementById("scores").innerHTML = score1 + "-" + score2;
-		// reset pelota to centerada
-		resetBall(2);
+		if(pelota.position.x <= -mesaWidth/2){
+			// CPU scores
+			scoreCPU++;
+			// update scoreboard HTML
+			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			// reset pelota to centerada
+			resetBall(2);
+		}else{
+			// Player scores
+			scorePlayer++;
+			// update scoreboard HTML
+			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			// reset pelota to center
+			resetBall(1);
+		}
 		
 	}
 	
-	// if pelota goes off the 'right' side (CPU's side)
-	if (pelota.position.x >= mesaWidth/2)
-	{	
-		// Player scores
-		score1++;
-		// update scoreboard HTML
-		document.getElementById("scores").innerHTML = score1 + "-" + score2;
-		// reset pelota to center
-		resetBall(1);
-	}
-	
-	// if pelota goes off the top side (side of mesa)
-	if (pelota.position.y <= -mesaHeight/2)
+	// si la pelota toca los costados
+	if (pelota.position.y <= -mesaHeight/2 || pelota.position.y >= mesaHeight/2 )
 	{
 		pelotaDirY = -pelotaDirY;
 	}	
-	// if pelota goes off the bottom side (side of mesa)
-	if (pelota.position.y >= mesaHeight/2)
-	{
-		pelotaDirY = -pelotaDirY;
-	}
-	// limit pelota's y-Vel to 2x the x-Vel
-	// this is so the pelota doesn't Vel from left to right super fast
-	// keeps game playable for humans
-	if (pelotaDirY > pelotaVel * 2)
-	{
-		pelotaDirY = pelotaVel * 2;
-	}
-	else if (pelotaDirY < -pelotaVel * 2)
-	{
-		pelotaDirY = -pelotaVel * 2;
-	}
+
+	// // limit pelota's y-Vel to 2x the x-Vel
+	// // this is so the pelota doesn't Vel from left to right super fast
+	// // keeps game playable for humans
+	// if (pelotaDirY > pelotaVel * 2)
+	// {
+	// 	pelotaDirY = pelotaVel * 2;
+	// }
+	// else if (pelotaDirY < -pelotaVel * 2)
+	// {
+	// 	pelotaDirY = -pelotaVel * 2;
+	// }
 }
 
 function movPaletas()
@@ -381,12 +376,10 @@ function paletaPhysics()
 	// if pelota is aligned with paleta1 on x plano
 	// remember the position is the CENTER of the object
 	// we only check between the front and the middle of the paleta (one-way collision)
-	if (pelota.position.x <= paleta1.position.x + paletaWidth
-	&&  pelota.position.x >= paleta1.position.x)
+	if (pelota.position.x <= paleta1.position.x + paletaWidth &&  pelota.position.x >= paleta1.position.x)
 	{
 		// and if pelota is aligned with paleta1 on y plano
-		if (pelota.position.y <= paleta1.position.y + paletaHeight/2
-		&&  pelota.position.y >= paleta1.position.y - paletaHeight/2)
+		if (pelota.position.y <= paleta1.position.y + paletaHeight/2 &&  pelota.position.y >= paleta1.position.y - paletaHeight/2)
 		{
 			// and if pelota is travelling towards player (-ve direction)
 			if (pelotaDirX < 0)
@@ -453,38 +446,22 @@ function resetBall(loser)
 }
 
 var bounceTime = 0;
-// checks if either player or opponent has reached 7 points
-function matchScoreCheck()
+
+function ganador()
 {
-	// if player has 7 points
-	if (score1 >= maxScore)
+	// jugador gana
+	if (scorePlayer >= maxScore || scoreCPU >= maxScore)
 	{
-		// stop the pelota
+		// detener pelota
 		pelotaVel = 0;
-		// write to the banner
-		document.getElementById("scores").innerHTML = "Player wins!";		
-		// make paleta bounce up and down
+		if(scorePlayer>= maxScore){
+			document.getElementById("scores").innerHTML = "Player wins!";
+			paleta1.position.z = 14 + Math.sin(bounceTime * 0.1) * 10;
+		}else{
+			document.getElementById("scores").innerHTML = "CPU wins!";
+			paleta2.position.z = 14 + Math.sin(bounceTime * 0.1) * 10;
+		}
 		bounceTime++;
-		paleta1.position.z = Math.sin(bounceTime * 0.1) * 10;
-
-		// enlarge and squish paleta to emulate joy
-
-		paleta1.scale.z = 2 + Math.abs(Math.sin(bounceTime * 0.1)) * 10;
-		paleta1.scale.y = 2 + Math.abs(Math.sin(bounceTime * 0.05)) * 10;
-	}
-	// else if opponent has 7 points
-	else if (score2 >= maxScore)
-	{
-		// stop the pelota
-		pelotaVel = 0;
-		// write to the banner
-		document.getElementById("scores").innerHTML = "CPU wins!";
-		// make paleta bounce up and down
-		bounceTime++;
-		paleta2.position.z = Math.sin(bounceTime * 0.1) * 10;
-		// enlarge and squish paleta to emulate joy
-		paleta2.scale.z = 2 + Math.abs(Math.sin(bounceTime * 0.1)) * 10;
-		paleta2.scale.y = 2 + Math.abs(Math.sin(bounceTime * 0.05)) * 10;
 	}
 }
 
