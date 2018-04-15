@@ -21,7 +21,13 @@ scorePlayer = 0,
 scoreCPU = 0,
 maxScore = 3, //score maximo
 difficulty = 0.15, //(0 - facil, 1 - dificil)
-brinco = 0;
+brinco = 0,
+power1= false,
+power2= false,
+power3= false,
+power4= false,
+power5= false,
+power6= false;
 
 function init()
 {	
@@ -240,9 +246,8 @@ function run()
 	ganador(); //revisa si hay algun ganador
 	pelotaLogica();
 	movPaletas();
-
 	fisicaPaleta();
-	
+	powerUps();
 	requestAnimationFrame(run);
 }
 
@@ -261,14 +266,14 @@ function pelotaLogica()
 			// update scoreboard HTML
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
 			// reset pelota to centerada
-			resetBall(2);
+			peloraReset(2);
 		}else{
 			// Player scores
 			scorePlayer++;
 			// update scoreboard HTML
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
 			// reset pelota to center
-			resetBall(1);
+			peloraReset(1);
 		}
 	}
 	
@@ -362,7 +367,7 @@ function fisicaPaleta()
 	}
 }
 
-function resetBall(perdedor)
+function peloraReset(perdedor)
 {
 	// Ponemos la pelota en el centro de la mesa
 	pelota.position.x = 0;
@@ -400,6 +405,46 @@ function ganador()
 			paleta2.position.z = 14 + Math.sin(brinco * 0.1) * 10;
 		}
 		brinco++;
+	}
+}
+
+function powerUps(){
+	if(Math.floor(Math.random() * 100)> 90){
+		var pow = Math.floor(Math.random() * 7) ;
+		switch (pow) {
+			case 1:
+				if(power1){
+					
+				}
+				break;
+			case 2:
+				if(power2){
+					
+				}
+				break;
+			case 3:
+				if(power3){
+					
+				}
+				break;
+			case 4:
+				if(power4){
+					
+				}
+				break;
+			case 5:
+				if(power5){
+					
+				}
+				break;
+			case 6:
+				if(power6){
+					
+				}
+				break;	
+			default:
+				break;
+		}
 	}
 }
 
