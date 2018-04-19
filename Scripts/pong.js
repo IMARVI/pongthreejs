@@ -246,12 +246,12 @@ function createScene()
 	pointLight.distance = 10000;
 	scene.add(pointLight);
 		
-	// add a spot light para las sombras
-    spotLight = new THREE.SpotLight(0xF8D898);
-    spotLight.position.set(0, 0, 460);
-    spotLight.intensity = 1.5;
-    spotLight.castShadow = true;
-    scene.add(spotLight);
+	// spotlight para las sombras
+  spotLight = new THREE.SpotLight(0xF8D898);
+  spotLight.position.set(0, 0, 460);
+  spotLight.intensity = 1.5;
+  spotLight.castShadow = true;
+  scene.add(spotLight);
 	
 	renderer.shadowMap.enabled = true;	
 	
@@ -261,7 +261,7 @@ function createScene()
 	camera.position.x = paleta1.position.x - 100;
 	camera.position.y = paleta1.position.y;
 	camera.position.z = paleta1.position.z + 110 ;
-	// rotate to face towards the opponent
+
 	camera.rotation.x = -0.01 * Math.PI/180;
 	camera.rotation.y = -60 * Math.PI/180;
 	camera.rotation.z = -90 * Math.PI/180;
@@ -339,7 +339,7 @@ function movPaletas()
 	//hacemos la nueva posicion unnuemor absoluto
 	
 	// Jugador ----------------------
-	// move izquierda
+	// movimiento izquierda
 	if (Key.isDown(Key.A) || Key.isDown(Key.L))		
 	{
 		if (paleta1.position.y < mesaHeight * 0.40)
@@ -352,7 +352,7 @@ function movPaletas()
 		}
 	}
 	
-	// move derecha
+	// movimiento derecha
 	else if (Key.isDown(Key.D) || Key.isDown(Key.R))
 	{
 		if (paleta1.position.y > -mesaHeight * 0.40)
