@@ -37,16 +37,13 @@ function init()
 
 function createScene()
 {
-	var VIEW_ANGLE = 60,
-	ASPECT = window.innerWidth / window.innerHeight;
-
 	var canvas = document.getElementById("canvas");
 
 	renderer = new THREE.WebGLRenderer({antialias:true});
 
 	camera = new THREE.PerspectiveCamera(
-		VIEW_ANGLE,
-		ASPECT,
+		60,
+		window.innerWidth / window.innerHeight,
 		0.2,
 		500);
 
@@ -86,6 +83,19 @@ function createScene()
 		{
 		  color: 0x888888
 		});
+	
+	var power1Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0xff0000
+		});
+	var power2Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0x00ff00
+		});
+	var power3Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0x0000ff
+		});	
 		
 	// Plano de area de juego
 	var plano = new THREE.Mesh(
@@ -123,7 +133,7 @@ function createScene()
 		  color: 0xD43001
 		});
 		
-	// Create a pelota with sphere geometry
+	// geometria de la pelota
 	pelota = new THREE.Mesh(
 		new THREE.SphereGeometry(
 			5,
@@ -140,6 +150,35 @@ function createScene()
 	pelota.position.z = 5;
 	pelota.receiveShadow = false;
 	pelota.castShadow = false;
+
+	// geometria del poweUp
+	pow1 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power1Material
+	);
+	pow1.name= "pow1";
+
+	pow2 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power1Material
+	);
+
+	pow3 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power1Material
+	);
 
 	//medidas de la paleta
 	paletaWidth = 10;
@@ -214,7 +253,7 @@ function createScene()
     spotLight.castShadow = true;
     scene.add(spotLight);
 	
-	renderer.shadowMapEnabled = true;	
+	renderer.shadowMap.enabled = true;	
 	
 	scorePlayer = 0;
 	scoreCPU = 0;
@@ -235,8 +274,8 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	
 }
 
 
@@ -261,19 +300,16 @@ function pelotaLogica()
 	if (pelota.position.x <= -mesaWidth/2 || pelota.position.x >= mesaWidth/2 )
 	{	
 		if(pelota.position.x <= -mesaWidth/2){
-			// CPU scores
+			// CPU anota
 			scoreCPU++;
-			// update scoreboard HTML
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
 			// reset pelota to centerada
-			peloraReset(2);
+			pelotaReset(2);
 		}else{
-			// Player scores
+			// jugador anota
 			scorePlayer++;
-			// update scoreboard HTML
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
-			// reset pelota to center
-			peloraReset(1);
+			pelotaReset(1);
 		}
 	}
 	
@@ -281,7 +317,17 @@ function pelotaLogica()
 	if (pelota.position.y <= -mesaHeight/2 || pelota.position.y >= mesaHeight/2 )
 	{
 		pelotaDirY = -pelotaDirY;
-	}	
+	}
+
+	//validamos si hay power ups, si hay verificamos si han sido tocados
+	if(scene.getObjectByName('pow1')) //|| scene.getObjectByName('pow2') || scene.getObjectByName('pow3'))
+	{
+		if(pelota.position.y == pow1.position.y && pelota.position.x == pelota.position.x)
+		{
+			console.log("tocamos el power!!!");
+		}
+	}
+
 }
 
 function movPaletas()
@@ -367,7 +413,7 @@ function fisicaPaleta()
 	}
 }
 
-function peloraReset(perdedor)
+function pelotaReset(perdedor)
 {
 	// Ponemos la pelota en el centro de la mesa
 	pelota.position.x = 0;
@@ -408,42 +454,16 @@ function ganador()
 	}
 }
 
-function powerUps(){
-	if(Math.floor(Math.random() * 100)> 90){
-		var pow = Math.floor(Math.random() * 7) ;
-		switch (pow) {
-			case 1:
-				if(power1){
-					
-				}
-				break;
-			case 2:
-				if(power2){
-					
-				}
-				break;
-			case 3:
-				if(power3){
-					
-				}
-				break;
-			case 4:
-				if(power4){
-					
-				}
-				break;
-			case 5:
-				if(power5){
-					
-				}
-				break;
-			case 6:
-				if(power6){
-					
-				}
-				break;	
-			default:
-				break;
+function powerUps()
+{	
+	if(Math.floor(Math.random() * 100) > 98){
+		var pow = 1; //Math.floor(Math.random() * 4) ;
+		if(pow==1){
+			scene.add(pow1);
+			console.log("dentro de pow");
+			pow1.position.x = 2;
+			pow1.position.y = 1;
+			pow1.position.z = 5;			
 		}
 	}
 }
@@ -455,9 +475,7 @@ var Key = {
   _pressed: {},
 
   A: 65,
-  W: 87,
   D: 68,
-  S: 83,
   SPACE: 32,
   L:37,
   R:39,
