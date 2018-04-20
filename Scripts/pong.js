@@ -12,7 +12,7 @@ paletaHeight,
 paletaDepth,
 paleta1DirY = 0,
 paleta2DirY = 0,
-paletaVel = 3,
+paletaVel = 5,
 pelota,
 pelotaDirX = 1,
 pelotaDirY = 1,
@@ -20,7 +20,7 @@ pelotaVel = 3,
 scorePlayer = 0,
 scoreCPU = 0,
 maxScore = 3, //score maximo
-difficulty = 0.15, //(0 - facil, 1 - dificil)
+difficulty = 0.11, //(0 - facil, 1 - dificil)
 brinco = 0,
 power1= false,
 power2= false,
@@ -305,7 +305,7 @@ function createScene()
 
 	camera.position.x = paleta1.position.x - 100;
 	camera.position.y = paleta1.position.y;
-	camera.position.z = paleta1.position.z + 110 ;
+	camera.position.z = paleta1.position.z + 100 ;
 
 	camera.rotation.x = -0.01 * Math.PI/180;
 	camera.rotation.y = -60 * Math.PI/180;
@@ -365,7 +365,7 @@ function pelotaLogica()
 	}
 
 	//validamos si hay power ups, si hay verificamos si han sido tocados
-	if(scene.getObjectByName('pow1')) 
+	if(scene.getObjectByName('pow1')) //este pow hace la pelota mas rapida por 5 segundos vel x 2
 	{
 		if(pelota.position.y <= pow1.position.y + 5.5 && pelota.position.y >= pow1.position.y - 5.5 &&
 			pelota.position.x <= pow1.position.x + 5.5 && pelota.position.x >= pow1.position.x - 5.5 &&
@@ -373,10 +373,94 @@ function pelotaLogica()
 		)
 		{
 			pow1.visible = false;
+			pelotaVel = pelotaVel *2;
+			setTimeout(() => { 
+				pelotaVel = 2.5;
+		}, 3000)	
+
+		}
+	}
+	if(scene.getObjectByName('pow2'))// hacemos la paleta mas grande
+	{
+		if(pelota.position.y <= pow2.position.y + 5.5 && pelota.position.y >= pow2.position.y - 5.5 &&
+			pelota.position.x <= pow2.position.x + 5.5 && pelota.position.x >= pow2.position.x - 5.5 &&
+			pow2.visible == true
+		)
+		{
+			pow2.visible = false;
+
+			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
+				//paleta Jugador
+				paleta1.scale.y = 2;
+				setTimeout(() => { 
+					paleta1.scale.y = 1;
+				}, 7000)
+			}else{
+				//paleta CPU
+				paleta2.scale.y = 2;
+				setTimeout(() => { 
+					paleta2.scale.y = 1;
+				}, 7000)
+			}
+			
+		}
+	}
+	if(scene.getObjectByName('pow3')) //mover mas lento la paleta
+	{
+		if(pelota.position.y <= pow3.position.y + 5.5 && pelota.position.y >= pow3.position.y - 5.5 &&
+			pelota.position.x <= pow3.position.x + 5.5 && pelota.position.x >= pow3.position.x - 5.5 &&
+			pow3.visible == true
+		)
+		{
+			pow3.visible = false;
+			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
+				difficulty = difficulty * 2;
+				setTimeout(() => { 
+					difficulty = difficulty / 2;
+				}, 7000)
+
+			}else{
+				paletaVel = 3;
+				console.log(paletaVel);
+				setTimeout(() => { 
+					paletaVel = 5
+				}, 7000)
+			}
+		}
+	}
+	if(scene.getObjectByName('pow4')) //multibola
+	{
+		if(pelota.position.y <= pow4.position.y + 5.5 && pelota.position.y >= pow4.position.y - 5.5 &&
+			pelota.position.x <= pow4.position.x + 5.5 && pelota.position.x >= pow4.position.x - 5.5 &&
+			pow4.visible == true
+		)
+		{
+			pow4.visible = false;
 			console.log("tocamos el power!!!");
 		}
 	}
-
+	if(scene.getObjectByName('pow5')) // neblina en el campo
+	{
+		if(pelota.position.y <= pow5.position.y + 5.5 && pelota.position.y >= pow5.position.y - 5.5 &&
+			pelota.position.x <= pow5.position.x + 5.5 && pelota.position.x >= pow5.position.x - 5.5 &&
+			pow5.visible == true
+		)
+		{
+			pow5.visible = false;
+			console.log("tocamos el power!!!");
+		}
+	}
+	if(scene.getObjectByName('pow6')) 
+	{
+		if(pelota.position.y <= pow6.position.y + 5.5 && pelota.position.y >= pow6.position.y - 5.5 &&
+			pelota.position.x <= pow6.position.x + 5.5 && pelota.position.x >= pow6.position.x - 5.5 &&
+			pow6.visible == true
+		)
+		{
+			pow6.visible = false;
+			console.log("tocamos el power!!!");
+		}
+	}
 }
 
 function movPaletas()
@@ -507,12 +591,12 @@ function ganador()
 function showPowerUps()
 {	
 	if(Math.floor(Math.random() * 1000) > 996){
-		var pow = Math.floor(Math.random() * 7) ;
+		var pow = 3;//Math.floor(Math.random() * 7) ;
 		if(pow==1 && !scene.getObjectByName('pow1')){
 			pow1.visible=true;
 			scene.add(pow1);
 			pow1.position.x = Math.floor(Math.random() * 200) - 100;
-			pow1.position.y = Math.floor(Math.random() * 220) - 110;
+			pow1.position.y = Math.floor(Math.random() * 200) - 100;
 			pow1.position.z = 5;
 			//despues de 6 segundos el PU es eliminado
 			setTimeout(() => {
@@ -522,8 +606,8 @@ function showPowerUps()
 		else if(pow == 2 && !scene.getObjectByName('pow2')){
 			pow2.visible = true;
 			scene.add(pow2);
-			pow2.position.x = Math.floor(Math.random() * 200) - 100;
-			pow2.position.y = Math.floor(Math.random() * 220) - 110;
+			pow2.position.x = 0 //Math.floor(Math.random() * 200) - 100;
+			pow2.position.y = 0//Math.floor(Math.random() * 200) - 100;
 			pow2.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow2);
@@ -532,8 +616,8 @@ function showPowerUps()
 		else if(pow == 3 && !scene.getObjectByName('pow3')){
 			pow3.visible = true;
 			scene.add(pow3);
-			pow3.position.x = Math.floor(Math.random() * 200) - 100;
-			pow3.position.y = Math.floor(Math.random() * 220) - 110;
+			pow3.position.x =0//Math.floor(Math.random() * 200) - 100;
+			pow3.position.y =0 //Math.floor(Math.random() * 200) - 100;
 			pow3.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow3);
@@ -543,7 +627,7 @@ function showPowerUps()
 			pow4.visible = true;
 			scene.add(pow4);
 			pow4.position.x = Math.floor(Math.random() * 200) - 100;
-			pow4.position.y = Math.floor(Math.random() * 220) - 110;
+			pow4.position.y = Math.floor(Math.random() * 200) - 100;
 			pow4.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow4);
@@ -553,7 +637,7 @@ function showPowerUps()
 			pow5.visible = true;
 			scene.add(pow5);
 			pow5.position.x = Math.floor(Math.random() * 200) - 100;
-			pow5.position.y = Math.floor(Math.random() * 220) - 110;
+			pow5.position.y = Math.floor(Math.random() * 200) - 100;
 			pow5.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow5);
@@ -563,7 +647,7 @@ function showPowerUps()
 			pow6.visible = true;
 			scene.add(pow6);
 			pow6.position.x = Math.floor(Math.random() * 200) - 100;
-			pow6.position.y = Math.floor(Math.random() * 220) - 110;
+			pow6.position.y = Math.floor(Math.random() * 200) - 100;
 			pow6.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow6);
@@ -597,3 +681,33 @@ var Key = {
   }
 };
 
+
+function pelotaClon()
+{
+	// actualizamos la posicion de la pelota
+	pelotaClon.position.x += pelotaClonDirX * pelotaVel;
+	pelotaClon.position.y += pelotaClonDirY * pelotaVel;
+
+	// Vemos quien metio gol
+	if (pelotaClon.position.x <= -mesaWidth/2 || pelotaClon.position.x >= mesaWidth/2 )
+	{	
+		if(pelotaClon.position.x <= -mesaWidth/2){
+			// CPU anota
+			scoreCPU++;
+			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			// reset pelota to centerada
+			pelotaReset(2);
+		}else{
+			// jugador anota
+			scorePlayer++;
+			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			pelotaReset(1);
+		}
+	}
+	
+	// si la pelota toca los costados
+	if (pelotaClon.position.y <= -mesaHeight/2 || pelotaClon.position.y >= mesaHeight/2 )
+	{
+		pelotaClonDirY = -pelotaClonDirY;
+	}
+}
