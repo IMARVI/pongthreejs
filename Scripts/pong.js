@@ -29,6 +29,8 @@ power4= false,
 power5= false,
 power6= false;
 
+//CPU x positivo
+//lado izq y positiva
 function init()
 {	
 	createScene();	
@@ -95,6 +97,18 @@ function createScene()
 	var power3Material = new THREE.MeshLambertMaterial(
 		{
 		  color: 0x0000ff
+		});
+	var power4Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0xffff00
+		});
+	var power5Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0x00ffff
+		});
+	var power6Material = new THREE.MeshLambertMaterial(
+		{
+		  color: 0xff00ff
 		});	
 		
 	// Plano de area de juego
@@ -168,8 +182,9 @@ function createScene()
 			10,
 			10
 		),
-		power1Material
+		power2Material
 	);
+	pow2.name="pow2";
 
 	pow3 = new THREE.Mesh(
 		new THREE.SphereGeometry(
@@ -177,9 +192,39 @@ function createScene()
 			10,
 			10
 		),
-		power1Material
+		power3Material
 	);
+	pow3.name= "pow3";
 
+	pow4 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power4Material
+	);
+	pow4.name= "pow4";
+	
+	pow5 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power5Material
+	);
+	pow5.name= "pow5";
+	
+	pow6 = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		power6Material
+	);
+	pow6.name= "pow6";
 	//medidas de la paleta
 	paletaWidth = 10;
 	paletaHeight = 30;
@@ -286,7 +331,7 @@ function run()
 	pelotaLogica();
 	movPaletas();
 	fisicaPaleta();
-	powerUps();
+	showPowerUps();
 	requestAnimationFrame(run);
 }
 
@@ -320,10 +365,14 @@ function pelotaLogica()
 	}
 
 	//validamos si hay power ups, si hay verificamos si han sido tocados
-	if(scene.getObjectByName('pow1')) //|| scene.getObjectByName('pow2') || scene.getObjectByName('pow3'))
+	if(scene.getObjectByName('pow1')) 
 	{
-		if(pelota.position.y == pow1.position.y && pelota.position.x == pelota.position.x)
+		if(pelota.position.y <= pow1.position.y + 5.5 && pelota.position.y >= pow1.position.y - 5.5 &&
+			pelota.position.x <= pow1.position.x + 5.5 && pelota.position.x >= pow1.position.x - 5.5 &&
+			pow1.visible == true
+		)
 		{
+			pow1.visible = false;
 			console.log("tocamos el power!!!");
 		}
 	}
@@ -453,17 +502,72 @@ function ganador()
 		brinco++;
 	}
 }
-
-function powerUps()
+//se corre un random, si entra, de forma random se selecciona un PU
+//Se evalua si ya està desplegado de lo contrario semuestra
+function showPowerUps()
 {	
-	if(Math.floor(Math.random() * 100) > 98){
-		var pow = 1; //Math.floor(Math.random() * 4) ;
-		if(pow==1){
+	if(Math.floor(Math.random() * 1000) > 996){
+		var pow = Math.floor(Math.random() * 7) ;
+		if(pow==1 && !scene.getObjectByName('pow1')){
+			pow1.visible=true;
 			scene.add(pow1);
-			console.log("dentro de pow");
-			pow1.position.x = 2;
-			pow1.position.y = 1;
-			pow1.position.z = 5;			
+			pow1.position.x = Math.floor(Math.random() * 200) - 100;
+			pow1.position.y = Math.floor(Math.random() * 220) - 110;
+			pow1.position.z = 5;
+			//despues de 6 segundos el PU es eliminado
+			setTimeout(() => {
+				scene.remove(pow1);
+			}, 6000)	
+		}
+		else if(pow == 2 && !scene.getObjectByName('pow2')){
+			pow2.visible = true;
+			scene.add(pow2);
+			pow2.position.x = Math.floor(Math.random() * 200) - 100;
+			pow2.position.y = Math.floor(Math.random() * 220) - 110;
+			pow2.position.z = 5;
+			setTimeout(() => {
+				scene.remove(pow2);
+			}, 6000)	
+		}
+		else if(pow == 3 && !scene.getObjectByName('pow3')){
+			pow3.visible = true;
+			scene.add(pow3);
+			pow3.position.x = Math.floor(Math.random() * 200) - 100;
+			pow3.position.y = Math.floor(Math.random() * 220) - 110;
+			pow3.position.z = 5;
+			setTimeout(() => {
+				scene.remove(pow3);
+			}, 6000)
+		}
+		else if(pow == 4 && !scene.getObjectByName('pow4')){
+			pow4.visible = true;
+			scene.add(pow4);
+			pow4.position.x = Math.floor(Math.random() * 200) - 100;
+			pow4.position.y = Math.floor(Math.random() * 220) - 110;
+			pow4.position.z = 5;
+			setTimeout(() => {
+				scene.remove(pow4);
+			}, 6000)
+		}
+		else if(pow == 5 && !scene.getObjectByName('pow5')){
+			pow5.visible = true;
+			scene.add(pow5);
+			pow5.position.x = Math.floor(Math.random() * 200) - 100;
+			pow5.position.y = Math.floor(Math.random() * 220) - 110;
+			pow5.position.z = 5;
+			setTimeout(() => {
+				scene.remove(pow5);
+			}, 6000)
+		}
+		else if(pow == 6 && !scene.getObjectByName('pow6')){
+			pow6.visible = true;
+			scene.add(pow6);
+			pow6.position.x = Math.floor(Math.random() * 200) - 100;
+			pow6.position.y = Math.floor(Math.random() * 220) - 110;
+			pow6.position.z = 5;
+			setTimeout(() => {
+				scene.remove(pow6);
+			}, 6000)	
 		}
 	}
 }
