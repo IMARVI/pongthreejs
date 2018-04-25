@@ -26,6 +26,8 @@ scoreCPU = 0,
 maxScore = 10, //score maximo
 difficulty = 0.18, //(0 - facil, 1 - dificil)
 brinco = 0,
+extraCPU = false,
+extraJugador = false,
 power1= false,
 power2= false,
 power3= false,
@@ -368,12 +370,20 @@ function pelotaLogica()
 		if(pelota.position.x <= -mesaWidth/2){
 			// CPU anota
 			scoreCPU++;
+			if(extraJugador){
+				scoreCPU--;
+				extraJugador = false;
+			}
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
 			// reset pelota to centerada
 			pelotaReset(2);
 		}else{
 			// jugador anota
 			scorePlayer++;
+			if(extraCPU){
+				scorePlayer--;
+				extraCPU = false;
+			}
 			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
 			pelotaReset(1);
 		}
@@ -480,7 +490,12 @@ function pelotaLogica()
 		)
 		{
 			pow5.visible = false;
-			console.log("tocamos el power!!!");
+
+			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
+				extraJugador = true;
+			}else{
+				extraCPU = true;
+			}
 		}
 	}
 	if(scene.getObjectByName('pow6')) 
@@ -502,7 +517,6 @@ function movPaletas()
 	//paleta copia direccion de pelota y la dificultad indica la rapidez/precision entre mayor el numero mas dificil
 	paleta2DirY = (pelota.position.y - paleta2.position.y) * difficulty;
 	paleta2.position.y += paleta2DirY;
-	//hacemos la nueva posicion unnuemor absoluto
 	
 	// Jugador ----------------------
 	// movimiento izquierda
@@ -578,7 +592,7 @@ function fisicaPaleta()
 		}
 	}
 
-	//si hay con de pelota
+	//si hay clon de pelota
 	if(pelotaClonOn){
 		if (pelotaClon.position.x <= paleta1.position.x + paletaWidth &&  pelotaClon.position.x >= paleta1.position.x)
 		{
@@ -618,13 +632,33 @@ function fisicaPaleta()
 
 function pelotaReset(perdedor)
 {
+	//quitamos todos los powerUps
+	if(scene.getObjectByName('pelotaClon')){
+		pelotaClonOn=false;
+	}
+	if(scene.getObjectByName('pow1')){
+		scene.remove(pow1);
+	}
+	if(scene.getObjectByName('pow2')){
+		scene.remove(pow2);
+	} 
+	if(scene.getObjectByName('pow3')){
+		scene.remove(pow3);
+	} 
+	if(scene.getObjectByName('pow4')){
+		scene.remove(pow4);
+	} 
+	if(scene.getObjectByName('pow5')){
+		scene.remove(pow5);
+	}
+	if(scene.getObjectByName('pow6')){
+		scene.remove(pow6);
+	} 
+
 	// Ponemos la pelota en el centro de la mesa
 	pelota.position.x = 0;
 	pelota.position.y = 0;
 	pelotaVel=0;
-	if(scene.getObjectByName('pelotaClon')){
-		pelotaClonOn=false;
-	}
 	
 	setTimeout(() => { 
 			// si el CPU anoto le enviamos la pelota a CPU y viceversa
@@ -639,7 +673,7 @@ function pelotaReset(perdedor)
 			pelotaVel = 2.5;
 			pelotaDirY = 1;
 			
-	}, 700)	
+	}, 900)	
 }
 
 function ganador()
@@ -664,7 +698,7 @@ function ganador()
 function showPowerUps()
 {	
 	if(Math.floor(Math.random() * 1000) > 996){
-		var pow = 4;//Math.floor(Math.random() * 7) ;
+		var pow = 5;//Math.floor(Math.random() * 7) ;
 		if(pow==1 && !scene.getObjectByName('pow1')){
 			pow1.visible=true;
 			scene.add(pow1);
@@ -709,8 +743,8 @@ function showPowerUps()
 		else if(pow == 5 && !scene.getObjectByName('pow5')){
 			pow5.visible = true;
 			scene.add(pow5);
-			pow5.position.x = Math.floor(Math.random() * 200) - 100;
-			pow5.position.y = Math.floor(Math.random() * 200) - 100;
+			pow5.position.x = 0//Math.floor(Math.random() * 200) - 100;
+			pow5.position.y = 0//Math.floor(Math.random() * 200) - 100;
 			pow5.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow5);
