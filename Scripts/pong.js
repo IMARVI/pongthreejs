@@ -17,10 +17,14 @@ pelota,
 pelotaDirX = 1,
 pelotaDirY = 1,
 pelotaVel = 3,
+pelotaClon,
+pelotaClonDirX = 0,
+pelotaClonDirY = 0,
+pelotaClonOn = false,
 scorePlayer = 0,
 scoreCPU = 0,
-maxScore = 3, //score maximo
-difficulty = 0.11, //(0 - facil, 1 - dificil)
+maxScore = 10, //score maximo
+difficulty = 0.18, //(0 - facil, 1 - dificil)
 brinco = 0,
 power1= false,
 power2= false,
@@ -165,6 +169,21 @@ function createScene()
 	pelota.receiveShadow = false;
 	pelota.castShadow = false;
 
+	// geometria de la pelotaClon
+	pelotaClon = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			5,
+			10,
+			10
+		),
+		sphereMaterial
+	);
+
+	pelotaClon.name = "pelotaClon";
+	scene.add(pelotaClon);
+	pelotaClon.visible = false;
+	pelotaClon.position.z = 5;
+
 	// geometria del poweUp
 	pow1 = new THREE.Mesh(
 		new THREE.SphereGeometry(
@@ -175,6 +194,7 @@ function createScene()
 		power1Material
 	);
 	pow1.name= "pow1";
+	
 
 	pow2 = new THREE.Mesh(
 		new THREE.SphereGeometry(
@@ -329,6 +349,7 @@ function run()
 	renderer.render(scene, camera);
 	ganador(); //revisa si hay algun ganador
 	pelotaLogica();
+	pelotaLogicaClon();
 	movPaletas();
 	fisicaPaleta();
 	showPowerUps();
@@ -436,10 +457,22 @@ function pelotaLogica()
 		)
 		{
 			pow4.visible = false;
-			console.log("tocamos el power!!!");
+
+			pelotaClonOn = true;
+			pelotaClon.visible = true;
+			pelotaClon.position.x = 1;
+			pelotaClon.position.y = 1;
+
+			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
+				pelotaClonDirX = 1;
+			}else{
+				pelotaClonDirX= -1;
+			}
+
+			pelotaClonDirY = 1.4;
 		}
 	}
-	if(scene.getObjectByName('pow5')) // neblina en el campo
+	if(scene.getObjectByName('pow5')) // Vida extra
 	{
 		if(pelota.position.y <= pow5.position.y + 5.5 && pelota.position.y >= pow5.position.y - 5.5 &&
 			pelota.position.x <= pow5.position.x + 5.5 && pelota.position.x >= pow5.position.x - 5.5 &&
@@ -544,6 +577,43 @@ function fisicaPaleta()
 			}
 		}
 	}
+
+	//si hay con de pelota
+	if(pelotaClonOn){
+		if (pelotaClon.position.x <= paleta1.position.x + paletaWidth &&  pelotaClon.position.x >= paleta1.position.x)
+		{
+			if (pelotaClon.position.y <= paleta1.position.y + paletaHeight/2 &&  pelotaClon.position.y >= paleta1.position.y - paletaHeight/2)
+			{
+				//revisamos que la pelota vaya en direccion del jugador
+				if (pelotaClonDirX < 0)
+				{
+					//sonido de 'toque'
+					//Cambiamos la direccion de la pelota
+					pelotaClonDirX = -pelotaClonDirX;
+					
+					//creamos un efecto slice, cambiando el angulo de direccion en y
+					pelotaClonDirY -= paleta1DirY * 0.7;
+				}
+			}
+		}
+
+		if (pelotaClon.position.x <= paleta2.position.x + paletaWidth &&  pelotaClon.position.x >= paleta2.position.x)
+		{
+			if (pelotaClon.position.y <= paleta2.position.y + paletaHeight/2 &&  pelotaClon.position.y >= paleta2.position.y - paletaHeight/2)
+			{
+				//revisamos que la pelota vaya en direccion del jugador
+				if (pelotaClonDirX > 0)
+				{
+					//agregar sonido
+					//Cambiamos la direccion de la pelota
+					pelotaClonDirX = -pelotaClonDirX;
+
+					//creamos un efecto slice, cambiando el angulo de direccion en y
+					pelotaClonDirY -= paleta2DirY * 0.7;
+				}
+			}
+		}
+	}
 }
 
 function pelotaReset(perdedor)
@@ -552,7 +622,10 @@ function pelotaReset(perdedor)
 	pelota.position.x = 0;
 	pelota.position.y = 0;
 	pelotaVel=0;
-
+	if(scene.getObjectByName('pelotaClon')){
+		pelotaClonOn=false;
+	}
+	
 	setTimeout(() => { 
 			// si el CPU anoto le enviamos la pelota a CPU y viceversa
 			if (perdedor == 1)
@@ -591,7 +664,7 @@ function ganador()
 function showPowerUps()
 {	
 	if(Math.floor(Math.random() * 1000) > 996){
-		var pow = 3;//Math.floor(Math.random() * 7) ;
+		var pow = 4;//Math.floor(Math.random() * 7) ;
 		if(pow==1 && !scene.getObjectByName('pow1')){
 			pow1.visible=true;
 			scene.add(pow1);
@@ -626,8 +699,8 @@ function showPowerUps()
 		else if(pow == 4 && !scene.getObjectByName('pow4')){
 			pow4.visible = true;
 			scene.add(pow4);
-			pow4.position.x = Math.floor(Math.random() * 200) - 100;
-			pow4.position.y = Math.floor(Math.random() * 200) - 100;
+			pow4.position.x = 0//Math.floor(Math.random() * 200) - 100;
+			pow4.position.y = 0//Math.floor(Math.random() * 200) - 100;
 			pow4.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow4);
@@ -682,32 +755,38 @@ var Key = {
 };
 
 
-function pelotaClon()
-{
-	// actualizamos la posicion de la pelota
-	pelotaClon.position.x += pelotaClonDirX * pelotaVel;
-	pelotaClon.position.y += pelotaClonDirY * pelotaVel;
+function pelotaLogicaClon()
+{	
+	//si true se ve la pelota
+	//si  false se elimina la pelota del juego
+	if(pelotaClonOn){
+		// actualizamos la posicion de la pelota
+		pelotaClon.position.x += pelotaClonDirX * pelotaVel;
+		pelotaClon.position.y += pelotaClonDirY * pelotaVel;
 
-	// Vemos quien metio gol
-	if (pelotaClon.position.x <= -mesaWidth/2 || pelotaClon.position.x >= mesaWidth/2 )
-	{	
-		if(pelotaClon.position.x <= -mesaWidth/2){
-			// CPU anota
-			scoreCPU++;
-			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
-			// reset pelota to centerada
-			pelotaReset(2);
-		}else{
-			// jugador anota
-			scorePlayer++;
-			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
-			pelotaReset(1);
+		// Vemos quien metio gol
+		if (pelotaClon.position.x <= -mesaWidth/2 || pelotaClon.position.x >= mesaWidth/2 )
+		{	
+			if(pelotaClon.position.x <= -mesaWidth/2){
+				// CPU anota
+				scoreCPU++;
+				document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+				// reset pelota to centerada
+				pelotaReset(2);
+			}else{
+				// jugador anota
+				scorePlayer++;
+				document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+				pelotaReset(1);
+			}
 		}
-	}
-	
-	// si la pelota toca los costados
-	if (pelotaClon.position.y <= -mesaHeight/2 || pelotaClon.position.y >= mesaHeight/2 )
-	{
-		pelotaClonDirY = -pelotaClonDirY;
+		
+		// si la pelota toca los costados
+		if (pelotaClon.position.y <= -mesaHeight/2 || pelotaClon.position.y >= mesaHeight/2 )
+		{
+			pelotaClonDirY = -pelotaClonDirY;
+		}
+	}else{
+		pelotaClon.visible = false;
 	}
 }
