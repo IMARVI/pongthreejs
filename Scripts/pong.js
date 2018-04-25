@@ -16,7 +16,7 @@ paletaVel = 5,
 pelota,
 pelotaDirX = 1,
 pelotaDirY = 1,
-pelotaVel = 3,
+pelotaVel = 2.5,
 pelotaClon,
 pelotaClonDirX = 0,
 pelotaClonDirY = 0,
@@ -28,6 +28,7 @@ difficulty = 0.18, //(0 - facil, 1 - dificil)
 brinco = 0,
 extraCPU = false,
 extraJugador = false,
+invertirJugador = false,
 power1= false,
 power2= false,
 power3= false,
@@ -445,9 +446,10 @@ function pelotaLogica()
 		{
 			pow3.visible = false;
 			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
-				difficulty = difficulty * 2;
+			
+				difficulty = difficulty / 2;
 				setTimeout(() => { 
-					difficulty = difficulty / 2;
+					difficulty = difficulty * 2;
 				}, 7000)
 
 			}else{
@@ -498,7 +500,7 @@ function pelotaLogica()
 			}
 		}
 	}
-	if(scene.getObjectByName('pow6')) 
+	if(scene.getObjectByName('pow6')) //invertimos controles
 	{
 		if(pelota.position.y <= pow6.position.y + 5.5 && pelota.position.y >= pow6.position.y - 5.5 &&
 			pelota.position.x <= pow6.position.x + 5.5 && pelota.position.x >= pow6.position.x - 5.5 &&
@@ -506,7 +508,18 @@ function pelotaLogica()
 		)
 		{
 			pow6.visible = false;
-			console.log("tocamos el power!!!");
+			if(pelotaDirX>=0){ //revisamos hacian donde va la pelota para decidir quien le pego
+				difficulty = difficulty / 2;
+				setTimeout(() => { 
+					difficulty = difficulty * 2;
+				}, 7000)
+			}else{
+				invertirJugador = true;
+				setTimeout(() => { 
+					invertirJugador = false;
+				}, 5000)
+			}
+			
 		}
 	}
 }
@@ -515,40 +528,76 @@ function movPaletas()
 {
 	//oponente CPU------------------------
 	//paleta copia direccion de pelota y la dificultad indica la rapidez/precision entre mayor el numero mas dificil
-	paleta2DirY = (pelota.position.y - paleta2.position.y) * difficulty;
-	paleta2.position.y += paleta2DirY;
-	
+	{
+		paleta2DirY = (pelota.position.y - paleta2.position.y) * difficulty;
+		paleta2.position.y += paleta2DirY;
+	}
 	// Jugador ----------------------
 	// movimiento izquierda
-	if (Key.isDown(Key.A) || Key.isDown(Key.L))		
-	{
-		if (paleta1.position.y < mesaHeight * 0.40)
+	if(!invertirJugador){
+		if (Key.isDown(Key.A) || Key.isDown(Key.L))		
 		{
-			paleta1DirY = paletaVel * 0.5;
+			if (paleta1.position.y < mesaHeight * 0.40)
+			{
+				paleta1DirY = paletaVel * 0.5;
+			}
+			else
+			{
+				paleta1DirY = 0;
+			}
+		}
+		
+		// movimiento derecha
+		else if (Key.isDown(Key.D) || Key.isDown(Key.R))
+		{
+			if (paleta1.position.y > -mesaHeight * 0.40)
+			{
+				paleta1DirY = -paletaVel * 0.5;
+			}
+			else
+			{
+				paleta1DirY = 0;
+			}
 		}
 		else
 		{
 			paleta1DirY = 0;
 		}
-	}
-	
-	// movimiento derecha
-	else if (Key.isDown(Key.D) || Key.isDown(Key.R))
-	{
-		if (paleta1.position.y > -mesaHeight * 0.40)
-		{
-			paleta1DirY = -paletaVel * 0.5;
-		}
-		else
-		{
-			paleta1DirY = 0;
-		}
+		paleta1.position.y += paleta1DirY;
 	}
 	else
 	{
-		paleta1DirY = 0;
+		if (Key.isDown(Key.A) || Key.isDown(Key.L))		
+		{
+			if (paleta1.position.y > -mesaHeight * 0.40)
+			{
+				paleta1DirY = paletaVel * 0.5;
+			}
+			else
+			{
+				paleta1DirY = 0;
+			}
+		}
+		
+		// movimiento derecha
+		else if (Key.isDown(Key.D) || Key.isDown(Key.R))
+		{
+			if (paleta1.position.y < mesaHeight * 0.40)
+			{
+				paleta1DirY = -paletaVel * 0.5;
+			}
+			else
+			{
+				paleta1DirY = 0;
+			}
+		}
+		else
+		{
+			paleta1DirY = 0;
+		}
+		paleta1.position.y -= paleta1DirY;
 	}
-	paleta1.position.y += paleta1DirY;
+	
 }
 
 // logica de la colision de paleta
@@ -653,7 +702,8 @@ function pelotaReset(perdedor)
 	}
 	if(scene.getObjectByName('pow6')){
 		scene.remove(pow6);
-	} 
+	}
+	invertirJugador=false;
 
 	// Ponemos la pelota en el centro de la mesa
 	pelota.position.x = 0;
@@ -697,8 +747,8 @@ function ganador()
 //Se evalua si ya està desplegado de lo contrario semuestra
 function showPowerUps()
 {	
-	if(Math.floor(Math.random() * 1000) > 996){
-		var pow = 5;//Math.floor(Math.random() * 7) ;
+	if(Math.floor(Math.random() * 1000) > 997){
+		var pow = Math.floor(Math.random() * 7) ;
 		if(pow==1 && !scene.getObjectByName('pow1')){
 			pow1.visible=true;
 			scene.add(pow1);
@@ -713,8 +763,8 @@ function showPowerUps()
 		else if(pow == 2 && !scene.getObjectByName('pow2')){
 			pow2.visible = true;
 			scene.add(pow2);
-			pow2.position.x = 0 //Math.floor(Math.random() * 200) - 100;
-			pow2.position.y = 0//Math.floor(Math.random() * 200) - 100;
+			pow2.position.x = Math.floor(Math.random() * 200) - 100;
+			pow2.position.y = Math.floor(Math.random() * 200) - 100;
 			pow2.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow2);
@@ -723,8 +773,8 @@ function showPowerUps()
 		else if(pow == 3 && !scene.getObjectByName('pow3')){
 			pow3.visible = true;
 			scene.add(pow3);
-			pow3.position.x =0//Math.floor(Math.random() * 200) - 100;
-			pow3.position.y =0 //Math.floor(Math.random() * 200) - 100;
+			pow3.position.x = Math.floor(Math.random() * 200) - 100;
+			pow3.position.y = Math.floor(Math.random() * 200) - 100;
 			pow3.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow3);
@@ -733,8 +783,8 @@ function showPowerUps()
 		else if(pow == 4 && !scene.getObjectByName('pow4')){
 			pow4.visible = true;
 			scene.add(pow4);
-			pow4.position.x = 0//Math.floor(Math.random() * 200) - 100;
-			pow4.position.y = 0//Math.floor(Math.random() * 200) - 100;
+			pow4.position.x = Math.floor(Math.random() * 200) - 100;
+			pow4.position.y = Math.floor(Math.random() * 200) - 100;
 			pow4.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow4);
@@ -743,8 +793,8 @@ function showPowerUps()
 		else if(pow == 5 && !scene.getObjectByName('pow5')){
 			pow5.visible = true;
 			scene.add(pow5);
-			pow5.position.x = 0//Math.floor(Math.random() * 200) - 100;
-			pow5.position.y = 0//Math.floor(Math.random() * 200) - 100;
+			pow5.position.x = Math.floor(Math.random() * 200) - 100;
+			pow5.position.y = Math.floor(Math.random() * 200) - 100;
 			pow5.position.z = 5;
 			setTimeout(() => {
 				scene.remove(pow5);
