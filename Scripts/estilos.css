@@ -1,34 +1,50 @@
 body
 {
 	background-color: black;
+	margin: 0px;
+	padding: 0px;
 }
 
-#gameCanvas 
+#scoreCPU
 {
-	background-color: black;
-	width: 640px;
-	height: 360px;
-	margin: auto;
-	align: center;
-}
-
-#scoreboard
-{
+	position: absolute;
+	top: 10%;
+	left: 20%;
 	text-align: center;
 	font-family: Segoe UI, Helvetica, Ubuntu, sans-serif;
 	color: white;
+	margin: 0px;
+	padding: 0px;
 }
 
-#scores
+#scoreJugador
 {
-	font-size:600%; 
+	position: absolute;
+	top: 10%;
+	left: 80%;
+	text-align: center;
+	font-family: Segoe UI, Helvetica, Ubuntu, sans-serif;
+	color: white;
+	margin: 0px;
+	padding: 0px;
+}
+
+#scpu, #sj
+{
+	font-size:300%; 
 	padding:0; 
 	margin:0;
 	color: white;
+	margin: 0px;
+	padding: 0px;
 }
 
-#title 
+#menu
 {
-	background-color: white;
-	color: black;
+	position: absolute;
+	top: 10%;
+	left: 46%;
+	color: white;
+	margin: 0px;
+	padding: 0px;
 }

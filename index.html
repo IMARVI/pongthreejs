@@ -3,17 +3,36 @@
 		<title>Pong Threejs</title>
 
 		<meta charset="utf-8">
-	</head>
-	<body onload='init();'>
-		<div id='canvas'></div>
 		<link rel="stylesheet" type="text/css" href="./Scripts/estilos.css">
 		<script src='./Scripts/three.js/three.js'></script>
 		<script src='./Scripts/pong.js'></script>
-		<div id='scoreboard'>
-			<h1 id='scores'>0-0</h1>
-			<h1 id='title'>3D PONG</h1>
+	</head>
+	<body onload='loadScene();'>
+		<div id = 'menu'>
+			<form>
+				<h2>Get Ready to Play</h2>
+				<input type="radio" name="dificultad" value = 0.15 > facil <br>
+				<input type="radio" name="dificultad" value = 0.18 > medio <br>
+				<input type="radio" name="dificultad" value = 0.20 > dificil <br>
+				<input type="radio" name="dificultad" value = 0.25 > Asian <br>
+			</form>
+			<button onclick="init()">Mostrar</button>
+			<h2>Controls</h2>
 			<h3>A - move left
 			<br>D - move right</h3>
 		</div>
+
+		<div id='scoreCPU'>
+			<h1 id='scpu'>0</h1>
+			<h2>CPU</h2>
+		</div>
+
+		<div id ='scoreJugador'>
+			<h1 id='sj'>0</h1>
+			<h2>Player</h2>
+		</div>
+
+		<div id='canvas'></div>
+		
 	</body>
 </html>

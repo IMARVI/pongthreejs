@@ -23,8 +23,8 @@ pelotaClonDirY = 0,
 pelotaClonOn = false,
 scorePlayer = 0,
 scoreCPU = 0,
-maxScore = 10, //score maximo
-difficulty = 0.18, //(0 - facil, 1 - dificil)
+maxScore = 3, //score maximo
+difficulty = 0, //(0 - facil, 1 - dificil)
 brinco = 0,
 extraCPU = false,
 extraJugador = false,
@@ -38,9 +38,22 @@ power6= false;
 
 //CPU x positivo
 //lado izq y positiva
-function init()
+function loadScene()
 {	
+	document.getElementById("canvas").style.visibility = "hidden";
+	document.getElementById("scoreCPU").style.visibility = "hidden";
+	document.getElementById("scoreJugador").style.visibility = "hidden";
+
 	createScene();	
+	
+}
+
+function init(){
+	document.getElementById("canvas").style.visibility = "visible";
+	document.getElementById("scoreCPU").style.visibility = "visible";
+	document.getElementById("scoreJugador").style.visibility = "visible";
+	difficulty = document.querySelector('input[name="dificultad"]:checked').value;
+	document.getElementById("menu").style.visibility = "hidden";
 	run();
 }
 
@@ -51,7 +64,7 @@ function createScene()
 	renderer = new THREE.WebGLRenderer({antialias:true});
 
 	camera = new THREE.PerspectiveCamera(
-		60,
+		55,
 		window.innerWidth / window.innerHeight,
 		0.2,
 		500);
@@ -315,11 +328,11 @@ function createScene()
 	scene.add(pointLight);
 		
 	// spotlight para las sombras
-  spotLight = new THREE.SpotLight(0xF8D898);
-  spotLight.position.set(0, 0, 460);
-  spotLight.intensity = 1.5;
-  spotLight.castShadow = true;
-  scene.add(spotLight);
+  	spotLight = new THREE.SpotLight(0xF8D898);
+	spotLight.position.set(0, 0, 460);
+	spotLight.intensity = 1.5;
+	spotLight.castShadow = true;
+	scene.add(spotLight);
 	
 	renderer.shadowMap.enabled = true;	
 	
@@ -375,7 +388,7 @@ function pelotaLogica()
 				scoreCPU--;
 				extraJugador = false;
 			}
-			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			document.getElementById("scpu").innerHTML = scoreCPU;
 			// reset pelota to centerada
 			pelotaReset(2);
 		}else{
@@ -385,7 +398,7 @@ function pelotaLogica()
 				scorePlayer--;
 				extraCPU = false;
 			}
-			document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+			document.getElementById("sj").innerHTML = scorePlayer;
 			pelotaReset(1);
 		}
 	}
@@ -734,11 +747,11 @@ function ganador()
 		// detener pelota
 		pelotaVel = 0;
 		if(scorePlayer>= maxScore){
-			document.getElementById("scores").innerHTML = "Player wins!";
-			paleta1.position.z = 14 + Math.sin(brinco * 0.1) * 10;
+			//document.getElementById("sc").innerHTML = "Player wins!";
+			paleta1.position.z = 16 + Math.sin(brinco * 0.1) * 7;
 		}else{
-			document.getElementById("scores").innerHTML = "CPU wins!";
-			paleta2.position.z = 14 + Math.sin(brinco * 0.1) * 10;
+			//document.getElementById("scores").innerHTML = "CPU wins!";
+			paleta2.position.z = 16 + Math.sin(brinco * 0.1) * 7;
 		}
 		brinco++;
 	}
@@ -854,13 +867,13 @@ function pelotaLogicaClon()
 			if(pelotaClon.position.x <= -mesaWidth/2){
 				// CPU anota
 				scoreCPU++;
-				document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+				document.getElementById("scpu").innerHTML = scoreCPU;
 				// reset pelota to centerada
 				pelotaReset(2);
 			}else{
 				// jugador anota
 				scorePlayer++;
-				document.getElementById("scores").innerHTML = scorePlayer + "-" + scoreCPU;
+				document.getElementById("sj").innerHTML = scorePlayer;
 				pelotaReset(1);
 			}
 		}
