@@ -4,7 +4,10 @@ body
 	margin: 0px;
 	padding: 0px;
 }
-
+html{
+	margin: 0%;
+	padding: 0%;
+}
 #scoreCPU
 {
 	position: absolute;
@@ -39,7 +42,7 @@ body
 	padding: 0px;
 }
 
-#menu
+#menu, #menu2
 {
 	position: absolute;
 	top: 10%;

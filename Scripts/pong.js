@@ -16,7 +16,7 @@ paletaVel = 5,
 pelota,
 pelotaDirX = 1,
 pelotaDirY = 1,
-pelotaVel = 2.5,
+pelotaVel = 0,
 pelotaClon,
 pelotaClonDirX = 0,
 pelotaClonDirY = 0,
@@ -43,6 +43,8 @@ function loadScene()
 	document.getElementById("canvas").style.visibility = "hidden";
 	document.getElementById("scoreCPU").style.visibility = "hidden";
 	document.getElementById("scoreJugador").style.visibility = "hidden";
+	document.getElementById("menu2").style.visibility = "hidden";
+
 
 	createScene();	
 	
@@ -54,6 +56,8 @@ function init(){
 	document.getElementById("scoreJugador").style.visibility = "visible";
 	difficulty = document.querySelector('input[name="dificultad"]:checked').value;
 	document.getElementById("menu").style.visibility = "hidden";
+	pelotaVel = 2.5;
+
 	run();
 }
 
@@ -754,7 +758,32 @@ function ganador()
 			paleta2.position.z = 16 + Math.sin(brinco * 0.1) * 7;
 		}
 		brinco++;
+		setTimeout(() => { 
+			menu2();
+		}, 5000)
+		
 	}
+}
+
+function menu2(){
+	if (scorePlayer >= maxScore || scoreCPU >= maxScore)
+	{
+		document.getElementById("canvas").style.visibility = "hidden";
+		document.getElementById("scoreCPU").style.visibility = "hidden";
+		document.getElementById("scoreJugador").style.visibility = "hidden";
+		difficulty = document.querySelector('input[name="dificultad"]:checked').value;
+		document.getElementById("menu2").style.visibility = "visible";
+		scoreCPU = scorePlayer = 0;
+		document.getElementById("scpu").innerHTML = scoreCPU;
+		document.getElementById("sj").innerHTML = scoreCPU;
+	}
+}
+function reboot(){
+	document.getElementById("menu2").style.visibility = "hidden";
+	document.getElementById("canvas").style.visibility = "visible";
+	document.getElementById("scoreCPU").style.visibility = "visible";
+	document.getElementById("scoreJugador").style.visibility = "visible";
+	pelotaVel = 2.5;
 }
 //se corre un random, si entra, de forma random se selecciona un PU
 //Se evalua si ya està desplegado de lo contrario semuestra
