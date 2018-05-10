@@ -97,17 +97,17 @@ function createScene()
 
 	var planoMaterial = new THREE.MeshLambertMaterial(
 		{
-		  color: 0x808080
+		  color: 0x1E8449  //verde
 		});
 
 	var mesaMaterial =new THREE.MeshLambertMaterial(
 		{
-		  color: 0x33bbaa
+		  color: 0xDF3A01  //azul
 		});
 
 	var pisoMaterial = new THREE.MeshLambertMaterial(
 		{
-		  color: 0x888888
+		  color: 0x1F618D  
 		});
 	
 	var power1Material = new THREE.MeshLambertMaterial(

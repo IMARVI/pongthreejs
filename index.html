@@ -8,13 +8,24 @@
 		<script src='./Scripts/pong.js'></script>
 	</head>
 	<body onload='loadScene();'>
+
+			<div
+			class="contenedor">
+			<p>PONG </p>
+			<ul>
+				<li>THREE.JS</li>
+				<li>WEBGL</li>
+				<li>PONG!</li>
+			</ul>
+		</div>
+	
 		<div id = 'menu'>
 			<form>
 				<h2>Get Ready to Play</h2>
-				<input type="radio" name="dificultad" value = 0.15 > facil <br>
-				<input type="radio" name="dificultad" value = 0.18 > medio <br>
-				<input type="radio" name="dificultad" value = 0.20 > dificil <br>
-				<input type="radio" name="dificultad" value = 0.25 > Asian <br>
+				<input type="radio" name="dificultad" value = 0.15 > FÁCIL <br>
+				<input type="radio" name="dificultad" value = 0.18 > MEDIO <br>
+				<input type="radio" name="dificultad" value = 0.20 > DIFÍCIL <br>
+				<input type="radio" name="dificultad" value = 0.25 > ASIAN <br>
 			</form>
 			<button onclick="init()">Jugar</button>
 			<h2>Controls</h2>
@@ -25,15 +36,15 @@
 		<div id = 'menu2'>
 			<form>
 				<h2>Get Ready to Play</h2>
-				<input type="radio" name="dificultad" value = 0.15 > facil <br>
-				<input type="radio" name="dificultad" value = 0.18 > medio <br>
-				<input type="radio" name="dificultad" value = 0.20 > dificil <br>
-				<input type="radio" name="dificultad" value = 0.25 > Asian <br>
+				<input type="radio" name="dificultad" value = 0.15 > FÁCIL <br>
+				<input type="radio" name="dificultad" value = 0.18 > MEDIO <br>
+				<input type="radio" name="dificultad" value = 0.20 > DIFÍCIL <br>
+				<input type="radio" name="dificultad" value = 0.25 > ASIAN <br>
 			</form>
-			<button onclick="reboot()">Jugar</button>
+			<button onclick="reboot()">JUGAR</button>
 			<h2>Controls</h2>
-			<h3>A - move left
-			<br>D - move right</h3>
+			<h3>A - move Left
+			<br>D - move Right</h3>
 		</div>
 
 		<div id='scoreCPU'>
@@ -47,6 +58,7 @@
 		</div>
 
 		<div id='canvas'></div>
-		
+	
+		<embed src="pulse.mp3" autostart="true" loop="false" width="250" height="60">
 	</body>
 </html>
